@@ -1,4 +1,4 @@
-var parseSchema = require('protocol-buffers-schema');
+var parseSchema = require('protobuf-schema2');
 var primitive = require('./types');
 var fs = require('fs');
 var path = require('path');
@@ -66,6 +66,24 @@ Compiler.prototype.compile = function(type) {
     this.schema.enums.forEach(function(e) {
       this.resolve(e.id, '');
     }, this);
+  }
+
+  this.root.schema = {
+    imports: this.schema.imports,
+    package:  this.schema.package,
+    rpc: this.schema.services.reduce((result, item) => {
+      const service = item.name
+      const curServiceMethods = item.methods.map((method)=>{
+        return {
+          service,
+          method: method.name,
+          request: method.input_type,
+          response: method.output_type
+        }
+      })
+      result.push(...curServiceMethods)
+      return result 
+    }, [])
   }
   
   delete this.root.used;
