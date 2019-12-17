@@ -68,6 +68,8 @@ Compiler.prototype.compile = function(type) {
     }, this);
   }
 
+  this.schema.services = this.schema.services || []
+
   this.root.schema = {
     imports: this.schema.imports,
     package:  this.schema.package,
@@ -75,6 +77,7 @@ Compiler.prototype.compile = function(type) {
       const service = item.name
       const curServiceMethods = item.methods.map((method)=>{
         return {
+          package:  this.schema.package,
           service,
           method: method.name,
           request: method.input_type,
